@@ -1,0 +1,17 @@
+{
+  "manifest_version":2,
+  "name":"Mic4at",
+  "version":"1.0.0",
+  "content_scripts":[
+    {
+      "matches":["https://vs.shkolo.bg/virtualroom"],
+      "js":["content.js"]
+    }
+  ],
+  "background":{
+    "scripts":["background.js"]
+  },
+  "browser_action":{
+    "default_icon":"icon.png"
+  }
+}
