@@ -4,7 +4,17 @@
   "version":"1.0.0",
   "content_scripts":[
     {
-      "matches":["https://vs.shkolo.bg/virtualroom","https://meet.jit.si/*"],
+      "matches":["https://meet.jit.si/*"],
+      "js":["content.js"],
+      "all_frames": true
+    },
+    {
+      "matches":["https://*.shkolo.live/*"],
+      "js":["content.js"],
+      "all_frames": true
+    },
+    {
+      "matches":["https://meet.jit.si/*"],
       "js":["content.js"]
     }
   ],

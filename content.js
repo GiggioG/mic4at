@@ -1,10 +1,6 @@
 let rec = true;
-let sleep = milliseconds => {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds);
+let sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 let conTo = txt => {
   txt.replace("!","?.");
@@ -17,7 +13,7 @@ let conTo = txt => {
   });
   let bin = [];
   out.forEach(n => {
-    bin.push((n).toString(2));
+    bin.push((n).toString(2).padStart(6,"0"));
   });
   return bin;
 }
@@ -52,9 +48,9 @@ let parseRecievedBits = bits => {
   win.document.body.innerHTML+=`<p>${conFrom(bins)}</p>`;
   rec = true;
 }
-let recieveBits = iconcontainer => {
+let recieveBits = async iconcontainer => {
   let bits = [];
-  sleep(500);
+  await sleep(500);
   let interval = window.setInterval(_=>{
     bits.push(Math.abs(1-(iconcontainer.getElementsByClassName("audioMuted").length)));
     console.log(`${Math.abs(1-(iconcontainer.getElementsByClassName("audioMuted").length))} - l: ${bits.length}`);
@@ -68,7 +64,7 @@ let recieveBits = iconcontainer => {
   },500);
 }
 let send = (butSel,str) => {
-  eval(`let but = ${butSel}`);
+  let but = document.querySelector(butSel);
   let bins = conTo(str);
   let bits = [];
   bins.forEach(b=>{
@@ -78,7 +74,11 @@ let send = (butSel,str) => {
     bits.push(0);
   }
   let state = 0;
-  let s = b => {
+  let timeout = 250;
+  console.log(bits);
+  /*bits.forEach(async b => {
+    await sleep(timeout);
+    timeout=500;
     if(b==0){
       if(state==1){
         but.click();
@@ -91,17 +91,30 @@ let send = (butSel,str) => {
         state = 1;
       }
     }
-  }
-  let timeout = 250;
-  console.log(bits);
-  bits.forEach(b => {
-    sleep(timeout);
-    timeout=500;
-    s(b);
     console.log(`${b}: currently ${state}`)
-  })
+  })*/
+  (async _=>{
+    for(b of bits){
+      await sleep(timeout);
+      timeout=500;
+      if(b==0){
+        if(state==1){
+          but.click();
+          state = 0;
+        }
+      }
+      else{
+        if(state==0){
+          but.click();
+          state = 1;
+        }
+      }
+      console.log(`${b}: currently ${state}`)
+    }
+  })();
 }
-let startListeningInterval = (html,el) => {
+let startListeningInterval = (html,elSel) => {
+  let el = document.querySelector(elSel);
   window.setInterval(_=>{
     if(el.innerHTML != html){
       if(rec){
@@ -114,12 +127,11 @@ let startListeningInterval = (html,el) => {
 }
 let handle = _=>{
   let qs = prompt("Selector to icon container:");
-  let el = document.querySelector(qs);
-  let html = el.innerHTML;
-  startListeningInterval(html,el);
+  let html = document.querySelector(qs).innerHTML;
+  startListeningInterval(html,qs);
   handle = _ => {
-    let msgInput = document.getElementById("usermsg");
-    let muteButtonSelector = 'document.getElementsByClassName("audio-preview")[0].firstChild.firstChild.firstChild.firstChild.firstChild.firstChild';
+    let msgInput = document.querySelector("#usermsg");
+    let muteButtonSelector = '.audio-preview > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child';
     send(muteButtonSelector,msgInput.value);
     msgInput.value = "";
   }
