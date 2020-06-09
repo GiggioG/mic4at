@@ -25,7 +25,7 @@ let conFrom = bin => {
   let alphabet = "абвгдежзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ,?.";
   let str = "";
   dec.forEach(d=>{
-    str+=(alphabet[d+1]);
+    str+=(alphabet[d-1]);
   });
   str.replace("?.","!");
   return str;
